@@ -43,7 +43,6 @@ df.info()                                 # column details
 
 # One important feature is the conversion from string to numeric datatypes!
 # For _input_ features, numpy and scikit-learn need numeric datatypes
-# You can define a transformation function, to help out...
 def transform(s):
     """ from string to number
           setosa -> 0
@@ -72,9 +71,9 @@ X_labeled = X_all[9:,:]  # make the 10 into 0 to keep all of the data
 y_labeled = y_all[9:]    # same for this line
 
 #
-# we can scramble the data - but only the labeled data!
+# scramble data
 # 
-indices = np.random.permutation(len(X_labeled))  # this scrambles the data each time
+indices = np.random.permutation(len(X_labeled))  
 X_data_full = X_labeled[indices]
 y_data_full = y_labeled[indices]
 
@@ -106,7 +105,7 @@ for max_depth in [1,2,3]:
                             class_names=target_names, 
                             leaves_parallel=True )  # lots of options!
     #
-    # Visualize the resulting graphs (the trees) at www.webgraphviz.com
+    # Visualize tree graphs at www.webgraphviz.com
     #
     print("Wrote the file", filename)  
     #
@@ -176,7 +175,7 @@ print("Order:", feature_names[0:4])
 
 
 #
-# now, show off Random Forests!
+# Random Forests Next
 # 
 
 print("\n\n")
@@ -192,9 +191,9 @@ X_labeled = X_all[9:,:]  # just the input features, X, that HAVE output labels
 y_labeled = y_all[9:]    # here are the output labels, y, for X_labeled
 
 #
-# we can scramble the data - but only the labeled data!
+# Scramble data
 # 
-indices = np.random.permutation(len(X_labeled))  # this scrambles the data each time
+indices = np.random.permutation(len(X_labeled))  
 X_data_full = X_labeled[indices]
 y_data_full = y_labeled[indices]
 
@@ -206,13 +205,6 @@ y_train = y_data_full
 # cross-validation to determine the Random Forest's parameters (max_depth and n_estimators)
 #
 
-#
-# Lab task!  Your goal:
-#   + loop over a number of values of max_depth (m)
-#   + loop over different numbers of trees/n_estimators (n)
-#   -> to find a pair of values that results in a good average CV score
-#
-
 highest_CV_score = 0
 best_max_depth = 0
 best_number_estimator = 0
@@ -220,9 +212,6 @@ best_number_estimator = 0
 for m_depth in range(1,20):
     for n_est in range(50,250,50):
 
-        # here is a _single_ example call to build a RF:
-        #m = 2
-        #n = 10
         rforest = ensemble.RandomForestClassifier(max_depth=m_depth, n_estimators=n_est)
 
         # an example call to run 5x cross-validation on the labeled data
@@ -230,7 +219,6 @@ for m_depth in range(1,20):
         print("CV scores:", scores)
         print("CV scores' average:", scores.mean())
 
-        # you'll want to take the average of these...
         average_cv_scores_RT = scores.mean()
         # comparing with highest CV score to determine whether this pair of depth and n_estimator is good or not:
         if (average_cv_scores_RT > highest_CV_score):
@@ -241,10 +229,7 @@ for m_depth in range(1,20):
 print("The best pair of max_depth and n_estimators are: ", best_max_depth, "and", best_number_estimator)
 print("\nThe CV score for that pair is = ", highest_CV_score)
 
-#
-# now, train the model with ALL of the training data...  and predict the labels of the test set
-#
-
+#test using whole dataset
 X_test = X_all[0:9,0:4]              # the final testing data
 X_train = X_all[9:,0:4]              # the training data
 
@@ -252,17 +237,17 @@ y_test = y_all[0:9]                  # the final testing outputs/labels (unknown
 y_train = y_all[9:]                  # the training outputs/labels (known)
 
 # these next lines is where the full training data is used for the model
-MAX_DEPTH = best_max_depth#2
-NUM_TREES = best_number_estimator#10
+MAX_DEPTH = best_max_depth
+NUM_TREES = best_number_estimator
 print()
 print("Using MAX_DEPTH=", MAX_DEPTH, "and NUM_TREES=", NUM_TREES)
 rforest = ensemble.RandomForestClassifier(max_depth=MAX_DEPTH, n_estimators=NUM_TREES)
 rforest = rforest.fit(X_train, y_train) 
 
-# here are some examples, printed out:
+# Show results:
 print("Random-forest predictions:\n")
 predicted_labels = rforest.predict(X_test)
-answer_labels = answers  # note that we're "cheating" here!
+answer_labels = answers  
 
 #
 # formatted printing again (see above for reference link)
@@ -272,7 +257,7 @@ s = "{0:<11} | {1:<11}".format("Predicted","Answer")
 print(s)
 s = "{0:<11} | {1:<11}".format("-------","-------")
 print(s)
-# the table...
+# the table
 for p, a in zip( predicted_labels, answer_labels ):
     s = "{0:<11} | {1:<11}".format(p,a)
     print(s)
