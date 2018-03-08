@@ -1,0 +1,37 @@
+digraph Tree {
+node [shape=box, style="filled", color="black"] ;
+graph [ranksep=equally, splines=polyline] ;
+0 [label="sex <= 0.5\ngini = 0.4826\nsamples = 1013\nvalue = [601, 412]\nclass = Did Not Survive", fillcolor="#e5813950"] ;
+1 [label="age <= 9.5\ngini = 0.3263\nsamples = 638\nvalue = [507, 131]\nclass = Did Not Survive", fillcolor="#e58139bd"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="sibsp <= 2.5\ngini = 0.4926\nsamples = 41\nvalue = [18, 23]\nclass = survived", fillcolor="#399de537"] ;
+1 -> 2 ;
+3 [label="gini = 0.2112\nsamples = 25\nvalue = [3, 22]\nclass = survived", fillcolor="#399de5dc"] ;
+2 -> 3 ;
+4 [label="gini = 0.1172\nsamples = 16\nvalue = [15, 1]\nclass = Did Not Survive", fillcolor="#e58139ee"] ;
+2 -> 4 ;
+5 [label="pclass <= 1.5\ngini = 0.2964\nsamples = 597\nvalue = [489, 108]\nclass = Did Not Survive", fillcolor="#e58139c7"] ;
+1 -> 5 ;
+6 [label="gini = 0.4505\nsamples = 143\nvalue = [94, 49]\nclass = Did Not Survive", fillcolor="#e581397a"] ;
+5 -> 6 ;
+7 [label="gini = 0.2261\nsamples = 454\nvalue = [395, 59]\nclass = Did Not Survive", fillcolor="#e58139d9"] ;
+5 -> 7 ;
+8 [label="pclass <= 2.5\ngini = 0.3757\nsamples = 375\nvalue = [94, 281]\nclass = survived", fillcolor="#399de5aa"] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+9 [label="fare <= 32.0896\ngini = 0.1177\nsamples = 223\nvalue = [14, 209]\nclass = survived", fillcolor="#399de5ee"] ;
+8 -> 9 ;
+10 [label="gini = 0.2321\nsamples = 97\nvalue = [13, 84]\nclass = survived", fillcolor="#399de5d8"] ;
+9 -> 10 ;
+11 [label="gini = 0.0157\nsamples = 126\nvalue = [1, 125]\nclass = survived", fillcolor="#399de5fd"] ;
+9 -> 11 ;
+12 [label="fare <= 23.0875\ngini = 0.4986\nsamples = 152\nvalue = [80, 72]\nclass = Did Not Survive", fillcolor="#e5813919"] ;
+8 -> 12 ;
+13 [label="gini = 0.4976\nsamples = 131\nvalue = [61, 70]\nclass = survived", fillcolor="#399de521"] ;
+12 -> 13 ;
+14 [label="gini = 0.1723\nsamples = 21\nvalue = [19, 2]\nclass = Did Not Survive", fillcolor="#e58139e4"] ;
+12 -> 14 ;
+{rank=same ; 0} ;
+{rank=same ; 1; 8} ;
+{rank=same ; 2; 5; 9; 12} ;
+{rank=same ; 3; 4; 6; 7; 10; 11; 13; 14} ;
+}
