@@ -1,15 +1,11 @@
-#
-# your own data modeling... 
-#
-
 import numpy as np            
 import pandas as pd
 
-from sklearn import tree      # for decision trees
-from sklearn import ensemble  # for random forests
+from sklearn import tree      
+from sklearn import ensemble  
 
-try: # different imports for different versions of scikit-learn
-    from sklearn.model_selection import cross_val_score   # simpler cv this week
+try: 
+    from sklearn.model_selection import cross_val_score   
 except ImportError:
     try:
         from sklearn.cross_validation import cross_val_score
@@ -17,17 +13,12 @@ except ImportError:
         print("No cross_val_score!")
 
 
-#
-# Here are the correct answers to the csv's "unknown" flowers
-#
-
-
 print("+++ Start of pandas' datahandling +++\n")
 
 # df is a "dataframe":
 df = pd.read_csv('Nasdaq.csv', header=0)   # read the file w/header row #0
 
-#df = df.drop('High', axis=1)  # axis = 1 means column
+#drop unnecessary columns
 df = df.drop('Close', axis=1)
 df = df.drop('Adj Close', axis = 1)
 df = df.drop('Volume', axis=1)
@@ -38,20 +29,10 @@ df = df.drop('Market', axis=1)
 
 
 # Now, let's take a look at a bit of the dataframe, df:
-df.head()                                 # first five lines
-df.info()                                 # column details
+df.head()                                 
+df.info()                                 
 
-df = df.dropna()
-
-# One important feature is the conversion from string to numeric datatypes!
-# For _input_ features, numpy and scikit-learn need numeric datatypes
-# You can define a transformation function, to help out...
-
-# probably don't need transformation funcitons here since all data are in the form we desire 
-
-# 
-# this applies the function transform to a whole column
-#
+df = df.dropna() #drop all unfilled data
 
 print("\n+++ End of pandas +++\n")
 
@@ -62,16 +43,15 @@ print("     +++++ Decision Trees +++++\n\n")
 # Data needs to be in numpy arrays - these next two lines convert to numpy arrays
 X_all = df.drop('High', axis=1).values  # you can pick any value, I picked High 
 y_all = df[ 'High' ].values 
-#df = df.drop('Low', axis=1)     
-total_sample = 1509
+total_sample = 1509 #total sample size
 split = total_sample - 25 #split the dataset into testing and training (number of split is arbitrary)
 X_labeled = X_all[:split,:]  # Marking where I want to start my training data 
 y_labeled = y_all[:split]    
 
 #
-# we can scramble the data - but only the labeled data!
+# scramble data
 # 
-indices = np.random.permutation(len(X_labeled))  # this scrambles the data each time
+indices = np.random.permutation(len(X_labeled)) 
 X_data_full = X_labeled[indices]
 y_data_full = y_labeled[indices]
 
@@ -94,13 +74,10 @@ max_CV_DT = 0
 for max_depth in range(1,15): #looping through max_depth to find the optimal
     # create our classifier
     dtree = tree.DecisionTreeRegressor(max_depth=max_depth,random_state=0)
-    #
-    # cross-validate to tune our model (this week, all-at-once)
-    #
+
     scores = cross_val_score(dtree, X_train, y_train, cv=5)
     average_cv_score_DT = scores.mean()
     print("For depth=", max_depth, "average CV score = ", average_cv_score_DT)  
-    # print("      Scores:", scores)
     if (max_CV_DT < average_cv_score_DT):
         max_CV_DT = average_cv_score_DT
         max_depth_DT = max_depth
@@ -115,7 +92,7 @@ MAX_DEPTH = max_depth_DT   # choose a MAX_DEPTH based on cross-validation...
 print("\nChoosing MAX_DEPTH =", MAX_DEPTH, "\n")
 
 #
-# now, train the model with ALL of the training data...  and predict the unknown labels
+# now, train the model with ALL of the training data...  and predict the 'test' labels
 #
 
 X_unknown = X_all[split:,:]              # the final testing data
@@ -124,19 +101,19 @@ X_train = X_all[:split,:]              # the training data
 y_unknown = y_all[split:]                  # the final testing outputs/labels (unknown)
 y_train = y_all[:split]                  # the training outputs/labels (known)
 
-# our decision-tree classifier...
+# our decision-tree classifier
 dtree = tree.DecisionTreeRegressor(max_depth=MAX_DEPTH,random_state=0)
 dtree = dtree.fit(X_train, y_train) 
 
 #
-# and... Predict the unknown data labels
+# Predict the test data labels
 #
 print("Decision-tree predictions:\n")
 predicted_labels = dtree.predict(X_unknown)
 answer_labels = y_unknown
 
 #
-# formatted printing! (docs.python.org/3/library/string.html#formatstrings)
+# formatted printing
 #
 s = "{0:<11} | {1:<11}".format("Predicted","Answer")
 #  arg0: left-aligned, 11 spaces, string, arg1: ditto
@@ -167,24 +144,20 @@ print("Wrote the file", filename)
 
 
 #
-# now, show off Random Forests!
+# Random Forests!
 # 
 
 print("\n\n")
 print("     +++++ Random Forests +++++\n\n")
 
-#
-# The data is already in good shape -- let's start from the original dataframe:
-#
 
-
-X_labeled = X_all[:split,:]  # just the input features, X, that HAVE output labels
-y_labeled = y_all[:split]    # here are the output labels, y, for X_labeled
+X_labeled = X_all[:split,:]  
+y_labeled = y_all[:split]    
 
 #
-# we can scramble the data - but only the labeled data!
+# scramble data
 # 
-indices = np.random.permutation(len(X_labeled))  # this scrambles the data each time
+indices = np.random.permutation(len(X_labeled))  
 X_data_full = X_labeled[indices]
 y_data_full = y_labeled[indices]
 
@@ -211,7 +184,6 @@ for m_depth in range(1,12):
         print("CV scores:", scores)
         print("CV scores' average:", scores.mean())
 
-        # you'll want to take the average of these...
         average_cv_scores_RT = scores.mean()
         # comparing with highest CV score to determine whether this pair of depth and n_estimator is good or not:
         if (average_cv_scores_RT > highest_CV_score):
@@ -223,7 +195,7 @@ print("The best pair of max_depth and n_estimators are: ", best_max_depth, "and"
 print("\nThe CV score for that pair is = ", highest_CV_score)
 
 #
-# now, train the model with ALL of the training data...  and predict the labels of the test set
+# now, train the model with ALL of the training data and predict the labels of the test set
 #
 
 X_test = X_all[split:,:]              # the final testing data
